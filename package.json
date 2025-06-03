@@ -1,0 +1,16 @@
+
+{
+  "name": "blog-manager",
+  "version": "1.0.0",
+  "description": "Blog Management Library with tests",
+  "main": "blogManager.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.6.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

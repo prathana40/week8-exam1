@@ -8,7 +8,7 @@ function resetState() {
   idCounter = 1;
 }
 
-// Helper: Validate blog post structure (basic)
+
 function validatePost(post) {
   if (
     !post.title ||
@@ -26,19 +26,19 @@ function validatePost(post) {
   ) {
     return false;
   }
-  // Additional checks can be added
+  
   return true;
 }
 
-// --- Create/Add ---
+
 function addOne(post) {
-  // Validate input
+  
   if (!validatePost(post)) return false;
 
-  // Ensure title is unique
+  
   if (blogPosts.find((p) => p.title === post.title)) return false;
 
-  // Add post
+  
   blogPosts.push(post);
   return post;
 }
@@ -56,8 +56,7 @@ function getByTitle(title) {
 function update(title, updates) {
   const post = blogPosts.find((p) => p.title === title);
   if (!post) return false;
-
-  // Prevent changing title to a duplicate title
+ 
   if (
     updates.title &&
     updates.title !== title &&

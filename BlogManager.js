@@ -1,99 +1,90 @@
- class BlogManager {
-  constructor() {
-    this.posts = [];
-  }
+ // blogManager.js
 
-  // Validate the required fields and uniqueness of title
-  validatePost(post, updating = false, originalTitle = null) {
-    const requiredFields = [
-      "title", "author", "content", "datePublished", "likes", "comments", "tags"
-    ];
+let blogPosts = [];
+let idCounter = 1; // Optional, but using title as unique id here
 
-    for (const field of requiredFields) {
-      if (!(field in post)) {
-        throw new Error(`Missing required field: ${field}`);
-      }
-    }
-
-    if (typeof post.title !== "string" || !post.title.trim()) {
-      throw new Error("Title must be a non-empty string.");
-    }
-
-    if (
-      !updating ||
-      (updating && post.title !== originalTitle)
-    ) {
-      if (this.posts.some(p => p.title === post.title)) {
-        throw new Error("Title must be unique.");
-      }
-    }
-
-    if (
-      typeof post.author !== "object" ||
-      typeof post.author.name !== "string" ||
-      typeof post.author.email !== "string"
-    ) {
-      throw new Error("Author must be an object with name and email strings.");
-    }
-
-    if (typeof post.content !== "string") {
-      throw new Error("Content must be a string.");
-    }
-
-    // Basic ISO date format check (YYYY-MM-DD)
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(post.datePublished)) {
-      throw new Error("datePublished must be in ISO format YYYY-MM-DD.");
-    }
-
-    if (typeof post.likes !== "number" || post.likes < 0) {
-      throw new Error("Likes must be a non-negative number.");
-    }
-
-    if (!Array.isArray(post.comments)) {
-      throw new Error("Comments must be an array.");
-    }
-
-    if (!Array.isArray(post.tags)) {
-      throw new Error("Tags must be an array.");
-    }
-  }
-
-  addBlogPost(post) {
-    this.validatePost(post);
-    this.posts.push(post);
-    return post;
-  }
-
-  readBlogPost(title) {
-    const found = this.posts.find(p => p.title === title);
-    return found || "Post not found";
-  }
-
-  updateBlogPost(title, updatedDetails) {
-    const index = this.posts.findIndex(p => p.title === title);
-    if (index === -1) return "Post not found";
-
-    const originalPost = this.posts[index];
-    const updatedPost = { ...originalPost, ...updatedDetails };
-
-    // Validate updated post with updating flag and original title
-    this.validatePost(updatedPost, true, originalPost.title);
-
-    this.posts[index] = updatedPost;
-    return updatedPost;
-  }
-
-  deleteBlogPost(title) {
-    const index = this.posts.findIndex(p => p.title === title);
-    if (index === -1) return "Post not found";
-
-    return this.posts.splice(index, 1)[0];
-  }
-
-  // Helper: get all posts (useful for testing)
-  listAllPosts() {
-    return [...this.posts];
-  }
+function resetState() {
+  blogPosts = [];
+  idCounter = 1;
 }
 
-module.exports = BlogManager;
+// Helper: Validate blog post structure (basic)
+function validatePost(post) {
+  if (
+    !post.title ||
+    typeof post.title !== "string" ||
+    !post.author ||
+    typeof post.author.name !== "string" ||
+    typeof post.author.email !== "string" ||
+    !post.content ||
+    typeof post.content !== "string" ||
+    !post.datePublished ||
+    typeof post.datePublished !== "string" ||
+    typeof post.likes !== "number" ||
+    !Array.isArray(post.comments) ||
+    !Array.isArray(post.tags)
+  ) {
+    return false;
+  }
+  // Additional checks can be added
+  return true;
+}
+
+// --- Create/Add ---
+function addOne(post) {
+  // Validate input
+  if (!validatePost(post)) return false;
+
+  // Ensure title is unique
+  if (blogPosts.find((p) => p.title === post.title)) return false;
+
+  // Add post
+  blogPosts.push(post);
+  return post;
+}
+
+// --- Read ---
+function getAll() {
+  return blogPosts;
+}
+
+function getByTitle(title) {
+  return blogPosts.find((p) => p.title === title) || null;
+}
+
+// --- Update ---
+function update(title, updates) {
+  const post = blogPosts.find((p) => p.title === title);
+  if (!post) return false;
+
+  // Prevent changing title to a duplicate title
+  if (
+    updates.title &&
+    updates.title !== title &&
+    blogPosts.find((p) => p.title === updates.title)
+  ) {
+    return false;
+  }
+
+  // Update fields
+  Object.assign(post, updates);
+  return post;
+}
+
+// --- Delete ---
+function deleteByTitle(title) {
+  const index = blogPosts.findIndex((p) => p.title === title);
+  if (index === -1) return false;
+
+  const [deleted] = blogPosts.splice(index, 1);
+  return deleted;
+}
+
+module.exports = {
+  addOne,
+  getAll,
+  getByTitle,
+  update,
+  deleteByTitle,
+  resetState,
+};

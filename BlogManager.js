@@ -1,7 +1,7 @@
  
 
 let blogPosts = [];
-let idCounter = 1; // Optional, but using title as unique id here
+let idCounter = 1; 
 
 function resetState() {
   blogPosts = [];

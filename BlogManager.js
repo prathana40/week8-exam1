@@ -1,4 +1,4 @@
- // blogManager.js
+ 
 
 let blogPosts = [];
 let idCounter = 1; // Optional, but using title as unique id here
